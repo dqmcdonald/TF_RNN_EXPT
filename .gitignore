@@ -6,3 +6,4 @@ orig
 *.log
 .DS_store
 __pycache__
+*.swp
