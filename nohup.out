@@ -1,0 +1,10 @@
+Starting TensorBoard b'47' at http://0.0.0.0:6006
+(Press CTRL+C to quit)
+/anaconda3/lib/python3.6/site-packages/h5py/__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+WARNING:tensorflow:Deleting accumulator '1528408524-training'
+WARNING:tensorflow:Deleting accumulator '1528408415-training'
+WARNING:tensorflow:Deleting accumulator '1528366648-training'
+WARNING:tensorflow:Deleting accumulator '1528407025-validation'
+WARNING:tensorflow:Deleting accumulator '1528407025-training'
+WARNING:tensorflow:Deleting accumulator '1528366648-validation'

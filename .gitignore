@@ -1,0 +1,8 @@
+shakespeare
+dickens
+checkpoints
+log
+orig
+*.log
+.DS_store
+__pycache__
