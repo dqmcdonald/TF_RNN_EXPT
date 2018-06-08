@@ -28,6 +28,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("checkpoint", help="The checkpoint for the training run to be used for generation");
 parser.add_argument("-t", "--topn", type=int, 
    dest="topn", help="topn value for generation", default=2)
+parser.add_argument("-l", "--length", type=int, 
+   dest="length", help="number of characters to be created", default=1000000)
 args = parser.parse_args()
 
 # use topn=10 for all but the last one which works with topn=2 for Shakespeare and topn=3 for Python
@@ -48,7 +50,7 @@ with tf.Session() as sess:
     # initial values
     y = x
     h = np.zeros([1, INTERNALSIZE * NLAYERS], dtype=np.float32)  # [ BATCHSIZE, INTERNALSIZE * NLAYERS]
-    for i in range(1000000000):
+    for i in range(args.length):
         yo, h = sess.run(['Yo:0', 'H:0'], feed_dict={'X:0': y, 'pkeep:0': 1., 'Hin:0': h, 'batchsize:0': 1})
 
         # If sampling is be done from the topn most likely characters, the generated text
