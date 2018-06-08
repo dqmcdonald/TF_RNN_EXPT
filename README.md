@@ -3,6 +3,17 @@ This is basically the code from https://github.com/martin-gorner/tensorflow-rnn-
 Made a clone for experimentation. Code and parameters are initially the
 same but added some argument parsing to support experimentation. 
 
+So now can say:
+
+python rnn_train.py [--epochs <num_epochs>] input_dir
+
+where input_dir is a path to all the files for training (e.g. shakespare/*.txt)
+
+Similarly for play generation:
+
+python rnn_play [ --topn <topn>] checkpoint
+
+where checkpoint is the checkpoint prefix from the training.
 
 
 
