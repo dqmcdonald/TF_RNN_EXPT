@@ -49,11 +49,15 @@ dropout_pkeep = 0.8    # some dropout
 parser=argparse.ArgumentParser(description="Train RNN")
 parser.add_argument("input_dir", help="Specification of path and files to be used for training. E.g. dir/*.txt")
 parser.add_argument("-e", "--epochs", dest="epochs", help="Number of epochs for training", type=int, default=10)
+parser.add_argument("--validation_percentage", dest="validation_percentage", 
+   help="The pecentage of the data to be used for validation, regardless of number of books", 
+   type=int, default=0)
 parser.add_argument("--novalidate", dest="novalidate", 
 	help="Whether to validate during training", action='store_false')
 args = parser.parse_args()
 
-codetext, valitext, bookranges = txt.read_data_files(args.input_dir, validation=args.novalidate)
+codetext, valitext, bookranges = txt.read_data_files(args.input_dir, validation=args.novalidate,
+     validation_percentage = args.validation_percentage)
 
 # display some stats on the data
 epoch_size = len(codetext) // (BATCHSIZE * SEQLEN)

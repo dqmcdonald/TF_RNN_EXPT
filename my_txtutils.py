@@ -233,12 +233,13 @@ class Progress:
         return print_progress
 
 
-def read_data_files(directory, validation=True):
+def read_data_files(directory, validation=True, validation_percentage = 0):
     """Read data files according to the specified glob pattern
     Optionnaly set aside the last file as validation data.
     No validation data is returned if there are 5 files or less.
     :param directory: for example "data/*.txt"
     :param validation: if True (default), sets the last file aside as validation data
+    :param validation_percentage: if > 0 then validation on this percntage of the data, regardless of number of books
     :return: training data, validation data, list of loaded file names with ranges
      If validation is
     """
@@ -286,10 +287,14 @@ def read_data_files(directory, validation=True):
     # pick the smallest
     nb_books = min(nb_books1, nb_books2, nb_books3)
 
-    if nb_books == 0 or not validation:
+    if validation and validation_percentage > 0 :
+        cutoff = int(len(codetext) * (100-validation_percentage)/100.0)
+    elif nb_books == 0 or not validation:
         cutoff = len(codetext)
     else:
         cutoff = bookranges[-nb_books]["start"]
+
+
     valitext = codetext[cutoff:]
     codetext = codetext[:cutoff]
     return codetext, valitext, bookranges
