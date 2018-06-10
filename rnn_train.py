@@ -174,7 +174,7 @@ validation_writer = tf.summary.FileWriter("log/" + timestamp + "-validation")
 # Only the last checkpoint is kept.
 if not os.path.exists("checkpoints"):
     os.mkdir("checkpoints")
-saver = tf.train.Saver(max_to_keep=1000)
+saver = tf.train.Saver(max_to_keep=1)
 
 # for display: init the progress bar
 DISPLAY_FREQ = 50

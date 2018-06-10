@@ -24,13 +24,20 @@ NLAYERS = 3
 INTERNALSIZE = 512
 
 
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("checkpoint", help="The checkpoint for the training run to be used for generation");
+parser.add_argument("-i", "--internalsize", dest="internalsize", help="Internal size", type=int, default=512)
+parser.add_argument("-n", "--nlayers", dest="nlayers", help="Number of layers", type=int, default=3)
 parser.add_argument("-t", "--topn", type=int, 
    dest="topn", help="topn value for generation", default=2)
 parser.add_argument("-l", "--length", type=int, 
    dest="length", help="number of characters to be created", default=1000000)
 args = parser.parse_args()
+
+INTERNALSIZE = args.internalsize
+NLAYERS = args.nlayers
 
 # use topn=10 for all but the last one which works with topn=2 for Shakespeare and topn=3 for Python
 
