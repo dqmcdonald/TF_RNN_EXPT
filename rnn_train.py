@@ -24,6 +24,26 @@ import my_txtutils as txt
 tf.set_random_seed(0)
 import argparse
 
+from datetime import datetime
+
+def print_elapsed_time( label, start_time ):
+    dt = time_elapsed = datetime.now() - start_time
+    total_seconds = int(dt.total_seconds())
+    hours, remainder = divmod(total_seconds,60*60)
+    minutes, seconds = divmod(remainder,60)
+    if hours > 0:
+      print("Elapsed time for {} is {} hrs {} mins {} secs".format( label, hours, minutes, seconds ))
+    elif minutes > 0:
+      print("Elapsed time for {} is {} mins {} secs".format( label, minutes, seconds ))
+    else:
+      print("Elapsed time for {} is {} secs".format( label, seconds ))
+
+
+print(time.strftime("%d %b %Y  %H:%M:%S "))
+print("")
+
+start_time = datetime.now()
+
 # model parameters
 #
 # Usage:
@@ -46,9 +66,14 @@ NLAYERS = 3
 learning_rate = 0.001  # fixed learning rate
 dropout_pkeep = 0.8    # some dropout
 
+
 parser=argparse.ArgumentParser(description="Train RNN")
 parser.add_argument("input_dir", help="Specification of path and files to be used for training. E.g. dir/*.txt")
 parser.add_argument("-e", "--epochs", dest="epochs", help="Number of epochs for training", type=int, default=10)
+parser.add_argument("-s", "--seqlen", dest="seqlen", help="Sequence length", type=int, default=30)
+parser.add_argument("-b", "--batchsize", dest="batchsize", help="Batch size", type=int, default=200)
+parser.add_argument("-i", "--internalsize", dest="internalsize", help="Internal size", type=int, default=512)
+parser.add_argument("-n", "--nlayers", dest="nlayers", help="Number of layers", type=int, default=3)
 parser.add_argument("--validation_percentage", dest="validation_percentage", 
    help="The pecentage of the data to be used for validation, regardless of number of books", 
    type=int, default=0)
@@ -56,8 +81,28 @@ parser.add_argument("--novalidate", dest="novalidate",
 	help="Whether to validate during training", action='store_false')
 args = parser.parse_args()
 
+SEQLEN = args.seqlen
+BATCHSIZE = args.batchsize
+INTERNALSIZE = args.internalsize
+NLAYERS = args.nlayers
+
+print("-"*80)
+print("Model parameters:")
+print("Seqlen        {:>5d}".format(SEQLEN))
+print("BatchSize     {:>5d}".format(BATCHSIZE))
+print("AlphaSize     {:>5d}".format(ALPHASIZE))
+print("InternalSize  {:>5d}".format(INTERNALSIZE))
+print("NLayers       {:>5d}".format(NLAYERS))
+print("Learning Rate {:>5.3f}".format(learning_rate))
+print("Dropout PKeep {:>5.1f}".format(dropout_pkeep))
+print("Num. epochs   {:>5d}".format(args.epochs))
+print("-"*80)
+print("")
+
+read_data_time = datetime.now()
 codetext, valitext, bookranges = txt.read_data_files(args.input_dir, validation=args.novalidate,
      validation_percentage = args.validation_percentage)
+print_elapsed_time("reading data files", read_data_time)
 
 # display some stats on the data
 epoch_size = len(codetext) // (BATCHSIZE * SEQLEN)
@@ -143,8 +188,23 @@ sess = tf.Session()
 sess.run(init)
 step = 0
 
+
+batch_time = datetime.now()
+epoch_time = datetime.now()
+last_epoch = 0
+
 # training loop
 for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_epochs=args.epochs):
+
+    
+    if( epoch != last_epoch ):
+        last_epoch = epoch
+        print("")
+        print("Starting epoch {}".format(epoch))
+        print_elapsed_time("completing an epoch", epoch_time)
+        print("")
+        epoch_time = datetime.now()
+
 
     # train on one minibatch
     feed_dict = {X: x, Y_: y_, Hin: istate, lr: learning_rate, pkeep: dropout_pkeep, batchsize: BATCHSIZE}
@@ -162,6 +222,8 @@ for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_
     # so we cut it up and batch the pieces (slightly inaccurate)
     # tested: validating with 5K sequences instead of 1K is only slightly more accurate, but a lot slower.
     if step % _50_BATCHES == 0 and len(valitext) > 0:
+        print_elapsed_time("processing 50 batches", batch_time )
+        validation_time = datetime.now()
         VALI_SEQLEN = 1*1024  # Sequence length for validation. State will be wrong at the start of each sequence.
         bsize = len(valitext) // VALI_SEQLEN
         txt.print_validation_header(len(codetext), bookranges)
@@ -173,6 +235,8 @@ for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_
         txt.print_validation_stats(ls, acc)
         # save validation data for Tensorboard
         validation_writer.add_summary(smm, step)
+        print_elapsed_time("validation", validation_time)
+        batch_time = datetime.now()
 
     # display a short text generated with the current weights and biases (every 150 batches)
     if step // 3 % _50_BATCHES == 0:
@@ -198,9 +262,9 @@ for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_
     istate = ostate
     step += BATCHSIZE * SEQLEN
 
-# all runs: SEQLEN = 30, BATCHSIZE = 100, ALPHASIZE = 98, INTERNALSIZE = 512, NLAYERS = 3
-
-# Tensorflow runs:
-#1528366648:
-#	Shakespeare - 10 epochs with default params
+print("")
+print("Training done {} epochs commplete".format( args.epochs))
+print_elapsed_time( "complete training run", start_time )
+print("")
+print(time.strftime("%d %b %Y  %H:%M:%S "))
 
