@@ -43,8 +43,8 @@ NLAYERS = args.nlayers
 
 base = args.checkpoint.split("-")[0]
 
-meta = 'checkpoints/' + base +'-0.meta'
 author = 'checkpoints/' + args.checkpoint
+meta = authot + '.meta'
 
 
 ncnt = 0
