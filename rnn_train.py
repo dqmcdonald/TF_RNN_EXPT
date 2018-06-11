@@ -58,6 +58,7 @@ start_time = datetime.now()
 #         To see the curves drift apart ("overfitting") try to use an insufficient amount of
 #         training data (shakedir = "shakespeare/t*.txt" for example)
 #
+# Note that the following defaults can be overriden by command line options:
 SEQLEN = 30
 BATCHSIZE = 200
 ALPHASIZE = txt.ALPHASIZE
@@ -74,6 +75,8 @@ parser.add_argument("-s", "--seqlen", dest="seqlen", help="Sequence length", typ
 parser.add_argument("-b", "--batchsize", dest="batchsize", help="Batch size", type=int, default=200)
 parser.add_argument("-i", "--internalsize", dest="internalsize", help="Internal size", type=int, default=512)
 parser.add_argument("-n", "--nlayers", dest="nlayers", help="Number of layers", type=int, default=3)
+parser.add_argument("-l", "--learning_rate", dest="learning_rate", help="Learning rate", type=float, default=0.001)
+parser.add_argument("-d", "--dropout_pkeep", dest="dropout_pkeep", help="Dropout pkeep", type=float, default=0.8)
 parser.add_argument("--validation_percentage", dest="validation_percentage", 
    help="The pecentage of the data to be used for validation, regardless of number of books", 
    type=int, default=0)
@@ -85,6 +88,8 @@ SEQLEN = args.seqlen
 BATCHSIZE = args.batchsize
 INTERNALSIZE = args.internalsize
 NLAYERS = args.nlayers
+learning_rate = args.learning_rate
+dropout_pkeep= args.dropout_pkeep
 
 print("-"*80)
 print("Model parameters:")
